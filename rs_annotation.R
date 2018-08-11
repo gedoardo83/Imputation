@@ -1,0 +1,15 @@
+args <- commandArgs(TRUE)
+gwas_file=toString(args[1])
+#gwas_file=paste(toString(args[1]),".bim",sep="")
+gwas<-read.table(gwas_file, sep="\t", stringsAsFactors=F, header=F)
+#dbsnp_file=paste("/data0/DATA/dbSNP/bed_files/hg19/",toString(args[2]), sep="")
+dbsnp_file<-toString(args[2])
+dbsnp<-read.table(dbsnp_file, sep="\t", stringsAsFactors=F, header=F, skip=1)
+dbsnp$V7=paste(dbsnp$V1,dbsnp$V3,sep=":")
+indexes<-(match(gwas[,2],dbsnp[,7]))
+gwas$V7<-dbsnp[indexes,4]
+gwas$V8<-ifelse(!is.na(gwas$V7),gwas$V7,gwas$V2)
+#gwas$V8<-ifelse(!is.na(gwas$match),gwas$match,"NA")
+new_bim<-gwas[,c(1,8,3,4,5,6)]
+output_file<-paste(toString(args[1]),"_new",".bim",sep="")
+write.table(new_bim,file=toString(output_file), sep="\t", quote=F, col.names=F, row.names=F)

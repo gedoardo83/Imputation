@@ -1,0 +1,9 @@
+bash Quality_filtering.sh
+bash SHAPEIT_phasing.sh
+bash Minimac3_Imputation.sh
+bash Merge_imputed_vcf.sh
+bash Recode_imputed_genotye_to_plink.sh
+bash Filtering_low_quality_variants.sh
+bash Join_original_and_imputed.sh
+bash rs_annotation.sh
+bash Final_directory_clean.sh
