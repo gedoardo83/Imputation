@@ -4,5 +4,13 @@ plink --bfile input.file --freq --allow-no-sex --out Step1.freq
 #Use Will Raynor script to prepare file (http://www.well.ox.ac.uk/~wrayner/tools/)
 perl /data0/opt/Imputation_tools/HRC-1000G-check-bim-v4.2.6.pl -b input.bim -f Step1.freq.frq -r /data0/opt/database/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
 
-#Run generated Run-plink.sh script to obtain vcf files splitted by chromosomes
-./Run-plink.sh
+#Process original file and obtain vcf files splitted by chromosomes ready for imputation
+plink --bfile ../QCed_dataset/Processed_dataset --exclude Exclude-Processed_dataset-HRC.txt --make-bed --out TEMP1
+plink --bfile TEMP1 --update-map Chromosome-Processed_dataset-HRC.txt --update-chr --make-bed --out TEMP2
+plink --bfile TEMP2 --update-map Position-Processed_dataset-HRC.txt --make-bed --out TEMP3
+plink --bfile TEMP3 --flip Strand-Flip-Processed_dataset-HRC.txt --make-bed --out TEMP4
+plink --bfile TEMP4 --reference-allele Force-Allele1-Processed_dataset-HRC.txt --make-bed --out Processed_dataset-updated
+echo -n {1..23} | xargs -P23 -I input -d" " sh -c '/data0/opt/plink-1.9/plink --bfile Processed_dataset-updated --allow-no-sex --a2-allele Force-Allele1-Processed_dataset-HRC.txt --recode-vcf --chr input --out Processed_dataset-updated-chrinput'
+ls *.vcf | xargs -P23 -I input -d"\n" sh -c 'gzip input'
+
+#Upload .vcf.gz files to Michigan imputation server for imputation using HRC reference panel
