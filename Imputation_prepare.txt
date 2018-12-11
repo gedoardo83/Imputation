@@ -12,6 +12,6 @@ plink --bfile TEMP3 --flip Strand-Flip-Processed_dataset-HRC.txt --make-bed --ou
 plink --bfile TEMP4 --reference-allele Force-Allele1-Processed_dataset-HRC.txt --make-bed --out Processed_dataset-updated
 echo -n {1..23} | xargs -P23 -I input -d" " sh -c '/data0/opt/plink-1.9/plink --bfile Processed_dataset-updated --allow-no-sex --a2-allele Force-Allele1-Processed_dataset-HRC.txt --recode-vcf --chr input --out Processed_dataset-updated-chrinput'
 sed 's/^23/X/g' Processed_dataset-updated-chr23.vcf > Processed_dataset-updated-chrX.vcf
-ls *.vcf | xargs -P24 -I input -d"\n" sh -c 'gzip input'
+ls *.vcf | xargs -P24 -I input -d"\n" sh -c 'bgzip input'
 
 #Upload .vcf.gz files to Michigan imputation server for imputation using HRC reference panel
