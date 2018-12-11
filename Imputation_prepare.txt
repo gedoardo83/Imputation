@@ -1,0 +1,8 @@
+#Compute allele frequencies
+plink --bfile input.file --freq --allow-no-sex --out Step1.freq
+
+#Use Will Raynor script to prepare file (http://www.well.ox.ac.uk/~wrayner/tools/)
+perl /data0/opt/Imputation_tools/HRC-1000G-check-bim-v4.2.6.pl -b input.bim -f Step1.freq.frq -r /data0/opt/database/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
+
+#Run generated Run-plink.sh script to obtain vcf files splitted by chromosomes
+./Run-plink.sh
