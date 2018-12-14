@@ -1,0 +1,12 @@
+#Decompress encrypted files
+ls *.zip | xargx -P22 -I input -d"\n" sh -c '7za e -p{password} input'
+
+#Filter vars with R2 >= 0.5
+
+#Identify duplicated vars in VCF files
+
+#Convert VCF files to plink bed format excluding duplicated vars
+
+#Merge chrs files
+
+#Filter final dataset (MAF 0.01, hwe 10e-6, geno 0.05)
