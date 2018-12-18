@@ -2,11 +2,19 @@
 ls *.zip | xargx -P22 -I input -d"\n" sh -c '7za e -p{password} input'
 
 #Filter vars with R2 >= 0.5
+ls *.vcf.gz | xargs -P22 -I input -d"\n" sh -c "bcftools filter --exclude 'INFO/R2<0.5' --output input.filtered.vcf input" 
+rename "vcf.gz.filtered.vcf" "filtered.vcf" *.vcf
 
 #Identify duplicated vars in VCF files
+ls *.filtered.vcf | xargs -P22 -I input -d"\n" sh -c "grep -v '#' input | cut -f3 | sort | uniq -d > input.dups"
 
-#Convert VCF files to plink bed format excluding duplicated vars
+#Convert VCF files to plink bed format 
+#Excluding duplicated vars and only with vars having genotype probability >= 0-9
+ls *.filtered.vcf | xargs -P22 -I input -d"\n" sh -c 'plink --vcf input --exclude input.dups --vcf-min-gp 0.9 --biallelic-only --allow-no-sex --make-bed --out input.plink'
 
 #Merge chrs files
+ls *.bim | sed 's/\.bim//g' > fileset.txt
+plink --merge-list fileset.txt --allow-no-sex --make-bed --out FULL.Imputed
 
 #Filter final dataset (MAF 0.01, hwe 10e-6, geno 0.05)
+plink --bfile FULL.Impute --maf 0.01 --hwe 1e-6 --geno 0.05 --allow-no-sex --make-bed --out FULL.Imputed.filtered
