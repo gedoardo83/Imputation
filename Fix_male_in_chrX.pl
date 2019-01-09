@@ -3,7 +3,7 @@
 #ARGV[1] = list of samples with sex code (1 male / 2 female) in the same order as VCF samples
 
 open(IN, $ARGV[1]);
-$n=9;
+$n=8;
 while ($row=<IN>) {
   $n++;
   chomp($row);
