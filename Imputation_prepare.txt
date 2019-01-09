@@ -11,7 +11,13 @@ plink --bfile TEMP2 --update-map Position-Processed_dataset-HRC.txt --make-bed -
 plink --bfile TEMP3 --flip Strand-Flip-Processed_dataset-HRC.txt --make-bed --out TEMP4
 plink --bfile TEMP4 --reference-allele Force-Allele1-Processed_dataset-HRC.txt --make-bed --out Processed_dataset-updated
 echo -n {1..23} | xargs -P23 -I input -d" " sh -c '/data0/opt/plink-1.9/plink --bfile Processed_dataset-updated --allow-no-sex --a2-allele Force-Allele1-Processed_dataset-HRC.txt --recode-vcf --chr input --out Processed_dataset-updated-chrinput'
-sed 's/^23/X/g' Processed_dataset-updated-chr23.vcf > Processed_dataset-updated-chrX.vcf
-ls *.vcf | xargs -P24 -I input -d"\n" sh -c 'bgzip input'
+
+#Additional processing for chrX
+plink --bfile Processed_dataset-updated-chr23-updated --extract range NON-PAR.range --make-bed --allow-no-sex --out Processed_dataset-updated-chr23.NON-PAR
+plink --bfile Processed_dataset-updated-chr23-updated.NON-PAR --check-sex --out Processed_dataset-updated-chr23.NON-PAR.checksex
+cat Processed_dataset-updated-chr23.NON-PAR.checksex.sexcheck | tr -s " " "\t" | sed 's/^\t//g' | cut -f1,4 | tail -n+2 | sed 's/\t/ /g' > Chr23-updated.SNPsex
+perl /data0/ourtools/Fix_male_in_ChrX.pl Processed_dataset-updated-chr23-updated.VCF.vcf Chr23-updated.SNPsex > Processed_dataset-updated-chr23-updated.VCF.fixedMales.vcf
+sed -i 's/^23/X/g' Processed_dataset-updated-chr23-updated.VCF.fixedMales.vcf
+ls *.vcf | xargs -P25 -I input -d"\n" sh -c 'bgzip input'
 
 #Upload .vcf.gz files to Michigan imputation server for imputation using HRC reference panel
