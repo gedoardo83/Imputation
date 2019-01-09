@@ -24,6 +24,6 @@ while ($row=<IN>) {
   foreach $id(@males) {
     if ($line[1] >= 2699520 && $line[1] <= 154931043 && $line[$id] eq "0/1") {$line[$id] = "./."}
   }
-  print "$row\n";
+  print join("\t", @line)."\n";
 }
 close(IN);
